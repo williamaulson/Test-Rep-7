@@ -1,52 +1,52 @@
 window.onload = function() {
-    // You might want to start with a template that uses GameStates:
-    //     https://github.com/photonstorm/phaser/tree/master/resources/Project%20Templates/Basic
-    
-    // You can copy-and-paste the code from any of the examples at http://examples.phaser.io here.
-    // You will need to change the fourth parameter to "new Phaser.Game()" from
-    // 'phaser-example' to 'game', which is the id of the HTML element where we
-    // want the game to go.
-    // The assets (and code) can be found at: https://github.com/photonstorm/phaser/tree/master/examples/assets
-    // You will need to change the paths you pass to "game.load.image()" or any other
-    // loading functions to reflect where you are putting the assets.
-    // All loading functions will typically all be found inside "preload()".
+    // William Aulson - Research Stuff
     
     "use strict";
     
-    var game = new Phaser.Game( 800, 600, Phaser.AUTO, 'game', { preload: preload, create: create, update: update } );
+    var game = new Phaser.Game(500, 500, Phaser.CANVAS, 'game', { preload: preload, create: create, update: update } );
     
-    function preload() {
-        // Load an image and call it 'logo'.
-        game.load.image( 'logo', 'assets/phaser.png' );
+    function preload()
+    {    
     }
     
-    var bouncy;
-    
-    function create() {
-        // Create a sprite at the center of the screen using the 'logo' image.
-        bouncy = game.add.sprite( game.world.centerX, game.world.centerY, 'logo' );
-        // Anchor the sprite at its center, as opposed to its top-left corner.
-        // so it will be truly centered.
-        bouncy.anchor.setTo( 0.5, 0.5 );
-        
-        // Turn on the arcade physics engine for this sprite.
-        game.physics.enable( bouncy, Phaser.Physics.ARCADE );
-        // Make it bounce off of the world bounds.
-        bouncy.body.collideWorldBounds = true;
-        
-        // Add some text using a CSS style.
-        // Center it in X, and position its top 15 pixels from the top of the world.
-        var style = { font: "25px Verdana", fill: "#9999ff", align: "center" };
-        var text = game.add.text( game.world.centerX, 15, "Build something awesome.", style );
-        text.anchor.setTo( 0.5, 0.0 );
+    var graphics;
+    var canvas;
+     
+    function create()
+    {
+    	    game.world.setBounds(0, 0, 500, 700);
+    	    
+    	    canvas = game.make.bitmapData(500, 500);
+    	    canvas.addToWorld();
+    	    
+    	    //Canvas line functions are not working. Can strokestyle be set to a hex color value?
+    	    
+    	    canvas.ctx.strokeStyle = "white";
+    	    canvas.ctx.lineWidth = 2;
+    	    canvas.ctx.beginPath();
+            canvas.ctx.moveTo(25,25);
+            canvas.ctx.lineTo(105,25);
+            canvas.ctx.lineTo(25,105);
+            canvas.ctx.fill();
+            canvas.update();
+    	    
+    	    //Graphics object (works but less efficient - maybe?)
+    	    /*
+    	    graphics = game.add.graphics(0, 0);
+    	    //graphics.beginFill(0xFF3300);
+    	    graphics.lineStyle(5, 0xffd900, 1);
+    	    graphics.moveTo(50,50);
+    	    graphics.lineTo(25, 5);
+    	    graphics.lineTo(10, 10);
+    	    graphics.lineTo(25, 22);
+    	    graphics.lineTo(50, 220);
+    	    graphics.lineTo(50, 50);
+    	    //graphics.endFill();
+    	    */
+    	    
     }
-    
-    function update() {
-        // Accelerate the 'logo' sprite towards the cursor,
-        // accelerating at 500 pixels/second and moving no faster than 500 pixels/second
-        // in X or Y.
-        // This function returns the rotation angle that makes it visually match its
-        // new trajectory.
-        bouncy.rotation = game.physics.arcade.accelerateToPointer( bouncy, this.game.input.activePointer, 500, 500, 500 );
+        
+    function update()
+    {  
     }
 };

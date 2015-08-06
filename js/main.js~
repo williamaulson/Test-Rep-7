@@ -1,0 +1,661 @@
+window.onload = function() {
+    // William Aulson - Research Stuff
+    
+    "use strict";
+    
+    var game = new Phaser.Game(500, 700, Phaser.CANVAS, 'game', { preload: preload, create: create, update: update } );
+    
+    function preload()
+    {
+    	    
+    }
+    
+    
+    var graphics;
+  
+        
+    function create()
+    {
+    	    game.world.setBounds(0, 0, 500, 700);
+ 
+    	    
+    	    canvas = game.make.bitmapData(500, 500);
+    	    canvas.addToWorld();
+    	    
+    	    //canvas.ctx.beginPath();
+        canvas.ctx.strokeStyle = "white";
+   
+        canvas.ctx.beginPath();
+               canvas.ctx.moveTo(25,25);
+               canvas.ctx.lineTo(105,25);
+               canvas.ctx.lineTo(25,105);
+               canvas.ctx.fill();
+               canvas.update();
+        //canvas.ctx.lineWidth = 2;
+        //canvas.ctx.stroke();
+        //bmd.dirty = true;
+
+    	    
+    	    //canvas.lineStyle(10, 0xffd900, 1);
+    	    //canvas.moveTo(50,50);
+    	    //canvas.lineTo(250, 220);
+    	    
+    	    //var xyz = new Phaser.Line(50,50,250,250);
+    	    
+    	    
+    	    graphics = game.add.graphics(0, 0);
+    	   graphics.beginFill(0xFF3300);
+    graphics.lineStyle(10, 0xffd900, 1);
+    
+    // draw a shape
+    graphics.moveTo(50,50);
+    graphics.lineTo(25, 5);
+    graphics.lineTo(10, 10);
+    graphics.lineTo(25, 22);
+    graphics.lineTo(50, 220);
+    graphics.lineTo(50, 50);
+    graphics.endFill();
+    	    
+    	    //hud = game.add.sprite(500, 0, 'hud');
+    	        	        	    
+    	    for (var i = 0; i < 500; i = i + 1)
+    	    {
+    	    	    matXY[i] = [];
+    	    	    for (var k = 0; k < 500; k = k + 1)
+    	    	    {
+    	    	    	   matXY[i][k] = 0;
+    	    	    	   //console.log('XY value: ' + i + ' ' + k + ' = ' + matXY[i][k]);
+    	    	    }
+    	    }
+    	    
+    	    //localPoint = [[-1,-1]];
+    	    
+    	    for (var i = 0; i < testPath.length; i = i + 1)
+    	    {
+    	    	    contPathArray[i] = [-1,0,-1];
+    	    	    colorStripe[i] = [[-1,-1], [-1,-1], [-1,-1], [-1,-1], [-1,-1]];
+    	    	    if (localPoint.length < 1)
+    	    	    {
+    	    	    	    localPoint[0] = [testPath[i][testPath[i].length - 1][0],testPath[i][testPath[i].length - 1][1], game.rnd.integerInRange(0, 1)];
+    	    	    	    localPointIndex = 1;
+    	    	    	    contPathArray[i][2] = 0;
+    	    	    }
+    	    	    else
+    	    	    {
+    	    	    	    foundLocal = false;
+    	    	    	    for (var j = 0; j < localPoint.length; j = j + 1)
+    	    	    	    {
+    	    	    	    	    if ((testPath[i][testPath[i].length - 1][0] === localPoint[j][0]) && (testPath[i][testPath[i].length - 1][1] === localPoint[j][1]))
+    	    	    	    	    {
+    	    	    	    	    	    contPathArray[i][2] = j;
+    	    	    	    	    	    foundLocal = true;
+    	    	    	    	    }
+    	    	    	    }
+    	    	    	    if (!foundLocal)
+    	    	    	    {
+    	    	    	    	    localPoint[localPointIndex] = [testPath[i][testPath[i].length - 1][0],testPath[i][testPath[i].length - 1][1], game.rnd.integerInRange(0, 1)];
+    	    	    	    	    contPathArray[i][2] = localPointIndex;
+    	    	    	    	    localPointIndex = localPointIndex + 1;
+    	    	    	    }
+    	    	    }
+    	    }
+    	    
+    	    for (var i = 0; i < localPoint.length; i = i + 1)
+    	    {
+    	    	    localClusterColor[i] = [255, 255, 255, 1, 1, 1];
+    	    	    if ((i % 7) === 0)
+    	    	    {
+    	    	    	    localClusterColor[i][3] = 1;
+    	    	    	    localClusterColor[i][4] = 1;
+    	    	    	    localClusterColor[i][5] = 1;
+    	    	    }
+    	    	    else if ((i % 7) === 1)
+    	    	    {
+    	    	    	    localClusterColor[i][3] = .5;
+    	    	    	    localClusterColor[i][4] = 1;
+    	    	    	    localClusterColor[i][5] = .5;
+    	    	    }
+    	    	    else if ((i % 7) === 2)
+    	    	    {
+    	    	    	    localClusterColor[i][3] = 1;
+    	    	    	    localClusterColor[i][4] = .5;
+    	    	    	    localClusterColor[i][5] = .5;
+    	    	    }
+    	    	    else if ((i % 7) === 3)
+    	    	    {
+    	    	    	    localClusterColor[i][3] = .5;
+    	    	    	    localClusterColor[i][4] = .5;
+    	    	    	    localClusterColor[i][5] = 1;
+    	    	    }
+    	    	    else if ((i % 7) === 4)
+    	    	    {
+    	    	    	    localClusterColor[i][3] = 1;
+    	    	    	    localClusterColor[i][4] = 1;
+    	    	    	    localClusterColor[i][5] = .5;
+    	    	    }
+    	    	    else if ((i % 7) === 5)
+    	    	    {
+    	    	    	    localClusterColor[i][3] = .5;
+    	    	    	    localClusterColor[i][4] = 1;
+    	    	    	    localClusterColor[i][5] = 1;
+    	    	    }
+    	    	    else
+    	    	    {
+    	    	    	    localClusterColor[i][3] = 1;
+    	    	    	    localClusterColor[i][4] = .5;
+    	    	    	    localClusterColor[i][5] = 1;
+    	    	    }
+    	    }
+    }
+        
+    function update()
+    {
+    	    displayTimeText.setText('Delay: ' + displayTime);
+    	    redPercentText.setText('Red %: ' + Math.round(localClusterColor[hudIndex][3] * 100));
+    	    greenPercentText.setText('Green %: ' + Math.round(localClusterColor[hudIndex][4] * 100));
+    	    bluePercentText.setText('Blue %: ' + Math.round(localClusterColor[hudIndex][5] * 100));
+    	    localText.setText('Cluster: ' + hudIndex);
+    	    redRGBText.setText('Red: ' + localClusterColor[hudIndex][0]);
+    	    greenRGBText.setText('Green: ' + localClusterColor[hudIndex][1]);
+    	    blueRGBText.setText('Blue: ' + localClusterColor[hudIndex][2]);
+    	    
+    	    if (runOnce)
+    	    {
+    	    	    runOnce = 0;
+    	    	    drawInstant();    	    	    
+    	    }
+    	    
+    	    if (runTimed && (game.time.now > timer))
+    	    {
+    	    	    runTimed = 0;
+    	    	    timer = game.time.now + displayTime;
+    	    	    //add empty check
+    	    	    drawTimed(path, point);
+    	    	    //console.log('testPath[path].length: ' + testPath[path].length);
+    	    	    //console.log('path: ' + path);
+    	    	    //console.log('point: ' + point);
+    	    	    point = point + 1;
+    	    	    if (point < testPath[path].length)
+    	    	    {
+    	    	    	    runTimed = 1;
+    	    	    }
+    	    	    else
+    	    	    {
+    	    	    	    path = path + 1;
+    	    	    	    if (path < testPath.length)
+    	    	    	    {
+    	    	    	    	    point = 0;
+    	    	    	    	    runTimed = 1;
+    	    	    	    }
+    	    	    }
+    	    }
+    	    
+    	    if (runTimedCont && (game.time.now > timerCont))
+    	    {
+    	    	    runTimedCont = 0;
+    	    	    timerCont = game.time.now + displayTime;
+    	    	    //add empty check
+    	    	    drawTimed(path, point);
+    	    	    //console.log('testPath[path].length: ' + testPath[path].length);
+    	    	    //console.log('path: ' + path);
+    	    	    //console.log('point: ' + point);
+    	    	    point = point + 1;
+    	    	    if (point < testPath[path].length)
+    	    	    {
+    	    	    	    runTimedCont = 1;
+    	    	    }
+    	    	    else
+    	    	    {
+    	    	    	    path = path + 1;
+    	    	    	    if (path < testPath.length)
+    	    	    	    {
+    	    	    	    	    point = 0;
+    	    	    	    	    runTimedCont = 1;
+    	    	    	    }
+    	    	    	    else
+    	    	    	    {
+    	    	    	    	    point = 0;
+    	    	    	    	    path = 0;
+    	    	    	    	    runTimedCont = 1;
+    	    	    	    	    clearMatrix();
+    	    	    	    	    canvas.clear();
+    	    	    	    	    canvas.update();
+    	    	    	    }
+    	    	    }
+    	    }
+    	    
+    	    if (runTimedContColor && (game.time.now > timerContColor))
+    	    {
+    	    	    //runTimedContColor = 0;
+    	    	    //console.log('displayTime' + displayTime);
+    	    	    timerContColor = game.time.now + displayTime;
+    	    	    
+    	    	    for (path = 0; path < testPath.length; path = path + 1)
+    	    	    {
+    	    	    	    drawTimedColor(path);
+    	    	    }
+    	    	    
+    	    	    blinkLocals();
+    	    	    
+    	    	    
+    	    	    //add empty check
+    	    	    //drawTimedColor(path, point, oldPath, oldPoint);
+    	    	    //console.log('testPath[path].length: ' + testPath[path].length);
+    	    	    //console.log('path: ' + path);
+    	    	    //console.log('point: ' + point);
+    	    	    /*>>>>>>>>>>>>>>>>>>>>(oldPath = path;
+    	    	    oldPoint = point;
+    	    	    point = point + 1;
+    	    	    if (point < testPath[path].length)
+    	    	    {
+    	    	    	    runTimedContColor = 1;
+    	    	    }
+    	    	    else
+    	    	    {
+    	    	    	    path = path + 1;
+    	    	    	    if (path < testPath.length)
+    	    	    	    {
+    	    	    	    	    point = 0;
+    	    	    	    	    runTimedContColor = 1;
+    	    	    	    }
+    	    	    	    else
+    	    	    	    {
+    	    	    	    	    point = 0;
+    	    	    	    	    path = 0;
+    	    	    	    	    runTimedContColor = 1;
+    	    	    	    	    clearMatrix();
+    	    	    	    	    canvas.clear();
+    	    	    	    	    canvas.update();
+    	    	    	    }
+    	    	    }*/
+    	    }
+    	    //canvas.update();
+    	    
+    	    if (QKey.isDown)
+    	    {
+    	    	    displayTime = displayTime + 1;
+    	    }
+    	    if (AKey.isDown)
+    	    {
+    	    	    if (displayTime > 1)
+    	    	    {
+    	    	    	    displayTime = displayTime - 1;
+    	    	    }  	    
+    	    }
+    	    if (WKey.isDown)
+    	    {
+    	    	    if (hudIndex < (localPoint.length - 1))
+    	    	    {
+    	    	    	    hudIndex = hudIndex + 1;
+    	    	    }
+    	    }
+    	    if (SKey.isDown)
+    	    {
+    	    	    if (hudIndex > 0)
+    	    	    {
+    	    	    	    hudIndex = hudIndex - 1;
+    	    	    } 	    
+    	    }
+    	    if (EKey.isDown)
+    	    {
+    	    	    if (localClusterColor[hudIndex][0] < 255)
+    	    	    {
+    	    	    	    localClusterColor[hudIndex][0] = localClusterColor[hudIndex][0] + 1;
+    	    	    }	    
+    	    }
+    	    if (DKey.isDown)
+    	    {
+    	    	    if (localClusterColor[hudIndex][0] > 0)
+    	    	    {
+    	    	    	    localClusterColor[hudIndex][0] = localClusterColor[hudIndex][0] - 1;
+    	    	    } 	    
+    	    }
+    	    if (RKey.isDown)
+    	    {
+    	    	    if (localClusterColor[hudIndex][1] < 255)
+    	    	    {
+    	    	    	    localClusterColor[hudIndex][1] = localClusterColor[hudIndex][1] + 1;
+    	    	    }	    
+    	    }
+    	    if (FKey.isDown)
+    	    {
+    	    	    if (localClusterColor[hudIndex][1] > 0)
+    	    	    {
+    	    	    	    localClusterColor[hudIndex][1] = localClusterColor[hudIndex][1] - 1;
+    	    	    } 	    
+    	    }
+    	    if (TKey.isDown)
+    	    {
+    	    	    if (localClusterColor[hudIndex][2] < 255)
+    	    	    {
+    	    	    	    localClusterColor[hudIndex][2] = localClusterColor[hudIndex][2] + 1;
+    	    	    }	    
+    	    }
+    	    if (GKey.isDown)
+    	    {
+    	    	    if (localClusterColor[hudIndex][2] > 0)
+    	    	    {
+    	    	    	    localClusterColor[hudIndex][2] = localClusterColor[hudIndex][2] - 1;
+    	    	    } 	    
+    	    }
+    	    if (YKey.isDown)
+    	    {
+    	    	    if (localClusterColor[hudIndex][3] < 1)
+    	    	    {
+    	    	    	    localClusterColor[hudIndex][3] = localClusterColor[hudIndex][3] + .01;
+    	    	    }	    
+    	    }
+    	    if (HKey.isDown)
+    	    {
+    	    	    if (localClusterColor[hudIndex][3] > 0)
+    	    	    {
+    	    	    	    localClusterColor[hudIndex][3] = localClusterColor[hudIndex][3] - .01;
+    	    	    } 	    
+    	    }
+    	    if (UKey.isDown)
+    	    {
+    	    	    if (localClusterColor[hudIndex][4] < 1)
+    	    	    {
+    	    	    	    localClusterColor[hudIndex][4] = localClusterColor[hudIndex][4] + .01;
+    	    	    }	    
+    	    }
+    	    if (JKey.isDown)
+    	    {
+    	    	    if (localClusterColor[hudIndex][4] > 0)
+    	    	    {
+    	    	    	    localClusterColor[hudIndex][4] = localClusterColor[hudIndex][4] - .01;
+    	    	    } 	    
+    	    }
+    	    if (OKey.isDown)
+    	    {
+    	    	    if (localClusterColor[hudIndex][5] < 1)
+    	    	    {
+    	    	    	    localClusterColor[hudIndex][5] = localClusterColor[hudIndex][5] + .01;
+    	    	    }	    
+    	    }
+    	    if (LKey.isDown)
+    	    {
+    	    	    if (localClusterColor[hudIndex][5] > 0)
+    	    	    {
+    	    	    	    localClusterColor[hudIndex][5] = localClusterColor[hudIndex][5] - .01;
+    	    	    } 	    
+    	    }
+    }
+    
+    function drawInstant()
+    {
+    	    for (var z = 0; z < testPath.length; z = z + 1)
+    	    {
+    	    	    for (var y = 0; y < testPath[z].length; y = y + 1)
+    	    	    {
+    	    	    	    //console.log('XY value: ' + z + ' ' + y + ' = ' + matXY[z][y]);
+    	    	    	    if (matXY[testPath[z][y][0]][testPath[z][y][1]] != 0)
+    	    	    	    {
+    	    	    	    	    if (testPath[z][y][2] <= compTime)
+    	    	    	    	    {
+    	    	    	    	    	    canvas.setPixel32(testPath[z][y][0], testPath[z][y][1], 145, 255, 189, 255, true);
+    	    	    	    	    	    canvas.update();
+    	    	    	    	    }
+    	    	    	    	    
+    	    	    	    }
+    	    	    	    else
+    	    	    	    {
+    	    	    	    	    if (testPath[z][y][2] <= compTime)
+    	    	    	    	    {
+    	    	    	    	    	    canvas.setPixel32(testPath[z][y][0], testPath[z][y][1], 255, 255, 255, 255, true);
+    	    	    	    	    	    canvas.update();
+    	    	    	    	    	    matXY[testPath[z][y][0]][testPath[z][y][1]] = matXY[testPath[z][y][0]][testPath[z][y][1]] + 1;
+    	    	    	    	    } 	    	    	    
+    	    	    	    }
+    	    	    }
+    	    } 
+    }
+    
+    function drawTimed(path, point)
+    {
+    	    //console.log('path: ' + path);
+    	    //console.log('point: ' + point);
+    	    if (matXY[testPath[path][point][0]][testPath[path][point][1]] != 0)
+    	    {
+    	    	    if (testPath[path][point][2] <= compTime)
+    	    	    {
+    	    	    	    canvas.setPixel32(testPath[path][point][0], testPath[path][point][1], 145, 255, 189, 255, true);
+    	    	    	    canvas.update();
+    	    	    }
+    	    }
+    	    else
+    	    {
+    	    	    if (testPath[path][point][2] <= compTime)
+    	    	    {
+    	    	    	    canvas.setPixel32(testPath[path][point][0], testPath[path][point][1], 255, 255, 255, 255, true);
+    	    	    	    canvas.update();
+    	    	    	    matXY[testPath[path][point][0]][testPath[path][point][1]] = matXY[testPath[path][point][0]][testPath[path][point][1]] + 1;    
+    	    	    }
+    	    }  	    
+    }
+    
+    function drawTimedColor(path)
+    {
+    	    //console.log('path: ' + path);
+    	    //console.log('point: ' + point);
+    	    
+    	    contPathArray[path][0] = contPathArray[path][0] + 1;
+    	    
+    	    //console.log('contPathArray[path]: ' + contPathArray[path]);
+    	    //console.log('testPath[path].length: ' + testPath[path].length);
+    	    
+    	    if (contPathArray[path][0] >= testPath[path].length)
+    	    {
+    	    	    //if (contPathArray[path][1] === 0)
+    	    	    //{
+    	    	    	    //change local point
+    	    	    	    //localPoint[0][0] = testPath[path][contPathArray[path][0] - 1][0];
+    	    	    	    //localPoint[0][1] = testPath[path][contPathArray[path][0] - 1][1];
+    	    	    	    //contPathArray[path][1] = 1;
+    	    	    //}
+    	    	    contPathArray[path][0] = 0;
+    	    }
+    	    if (colorStripe[path][0][0] != -1)
+    	    {
+    	       	    canvas.setPixel32(colorStripe[path][0][0], colorStripe[path][0][1], 0, 0, 0, 255, false);
+    	       	    //canvas.update();
+    	    }
+    	    if (colorStripe[path][1][0] != -1)
+    	    {
+    	       	    //console.log('colorStripe[path][1][0]: ' + colorStripe[path][1][0]);
+    	       	    //console.log('contPathArray[path][0]: ' + contPathArray[path][0]);
+    	       	    //console.log('testPath[path][contPathArray[path][0]][0]: ' + testPath[path][contPathArray[path][0]][0]);
+    	       	    //console.log('colorStripe[path][1][1]: ' + colorStripe[path][1][1]);
+    	       	    //console.log('testPath[path][contPathArray[path][0]][1]: ' + testPath[path][contPathArray[path][0]][1]);
+    	    	    if ((colorStripe[path][1][0] === testPath[path][contPathArray[path][0]][0]) && (colorStripe[path][1][1] === testPath[path][contPathArray[path][0]][1]))
+    	       	    {
+    	       	    	    canvas.setPixel32(colorStripe[path][1][0], colorStripe[path][1][1], 0, 0, 0, 255, false);
+    	       	    	    //canvas.update();
+    	       	    }
+    	       	    else
+    	       	    {
+    	       	    	    colorStripe[path][0][0] = colorStripe[path][1][0];
+    	       	    	    colorStripe[path][0][1] = colorStripe[path][1][1];
+    	       	    }
+    	    	    
+    	    }
+    	    if (colorStripe[path][2][0] != -1)
+    	    {
+    	    	    if ((colorStripe[path][2][0] === testPath[path][contPathArray[path][0]][0]) && (colorStripe[path][2][1] === testPath[path][contPathArray[path][0]][1]))
+    	       	    {
+    	       	    	    canvas.setPixel32(colorStripe[path][2][0], colorStripe[path][2][1], 0, 0, 0, 255, false);
+    	       	    	    //canvas.update();
+    	       	    }
+    	       	    else
+    	       	    {
+    	       	    	    colorStripe[path][1][0] = colorStripe[path][2][0];
+    	       	    	    colorStripe[path][1][1] = colorStripe[path][2][1];
+    	       	    }
+    	    }
+    	    if (colorStripe[path][3][0] != -1)
+    	    {
+    	    	    if ((colorStripe[path][3][0] === testPath[path][contPathArray[path][0]][0]) && (colorStripe[path][3][1] === testPath[path][contPathArray[path][0]][1]))
+    	       	    {
+    	       	    	    canvas.setPixel32(colorStripe[path][3][0], colorStripe[path][3][1], 0, 0, 0, 255, false);
+    	       	    	    //canvas.update();
+    	       	    }
+    	       	    else
+    	       	    {
+    	       	    	    colorStripe[path][2][0] = colorStripe[path][3][0];
+    	       	    	    colorStripe[path][2][1] = colorStripe[path][3][1];
+    	       	    }
+    	    }
+    	    if (colorStripe[path][4][0] != -1)
+    	    {
+    	    	    if ((colorStripe[path][4][0] === testPath[path][contPathArray[path][0]][0]) && (colorStripe[path][4][1] === testPath[path][contPathArray[path][0]][1]))
+    	       	    {
+    	       	    	    canvas.setPixel32(colorStripe[path][4][0], colorStripe[path][4][1], 0, 0, 0, 255, false);
+    	       	    	    //canvas.update();
+    	       	    }
+    	       	    else
+    	       	    {
+    	       	    	    colorStripe[path][3][0] = colorStripe[path][4][0];
+    	       	    	    colorStripe[path][3][1] = colorStripe[path][4][1];
+    	       	    }
+    	    }
+    	        	    
+    	    //console.log('path: ' + path);
+    	    //console.log('testPath[path]: ' + testPath[path]);
+    	    //console.log('contPathArray[path]: ' + contPathArray[path]);
+    	    //console.log('testPath[path][contPathArray[path]][0]: ' + testPath[path][contPathArray[path]][0]);
+    	    colorStripe[path][4][0] = testPath[path][contPathArray[path][0]][0];
+    	    colorStripe[path][4][1] = testPath[path][contPathArray[path][0]][1];
+    	    
+    	    redRGB = getRed(contPathArray[path][2]);
+    	    greenRGB = getGreen(contPathArray[path][2]);
+    	    blueRGB = getBlue(contPathArray[path][2]);
+    	    
+    	    if (colorStripe[path][0][0] != -1)
+    	    {
+    	       	    canvas.setPixel32(colorStripe[path][0][0], colorStripe[path][0][1], Math.round(.4 * redRGB), Math.round(.4 * greenRGB), Math.round(.4 * blueRGB), 255, false);
+    	       	    //canvas.update();
+    	    }
+    	    if (colorStripe[path][1][0] != -1)
+    	    {
+    	       	    canvas.setPixel32(colorStripe[path][1][0], colorStripe[path][1][1], Math.round(.6 * redRGB), Math.round(.6 * greenRGB), Math.round(.6 * blueRGB), 255, false);
+    	       	    //canvas.update();
+    	    }
+    	    if (colorStripe[path][2][0] != -1)
+    	    {
+    	       	    canvas.setPixel32(colorStripe[path][2][0], colorStripe[path][2][1], Math.round(.8 * redRGB), Math.round(.8 * greenRGB), Math.round(.8 * blueRGB), 255, false);
+    	       	    //canvas.update();
+    	    }
+    	    if (colorStripe[path][3][0] != -1)
+    	    {
+    	       	    canvas.setPixel32(colorStripe[path][3][0], colorStripe[path][3][1], Math.round(.9 * redRGB), Math.round(.9 * greenRGB), Math.round(.9 * blueRGB), 255, false);
+    	       	    //canvas.update();
+    	    }
+    	    if (colorStripe[path][4][0] != -1)
+    	    {
+    	       	    canvas.setPixel32(colorStripe[path][4][0], colorStripe[path][4][1], Math.round(1 * redRGB), Math.round(1 * greenRGB), Math.round(1 * blueRGB), 255, false);
+    	       	    //canvas.update();
+    	    }
+    	    /*if (localPoint[0][0] != -1)
+    	    {
+    	    	    if (blinkPoint)
+    	    	    {
+    	    	    	    canvas.setPixel32(localPoint[0][0], localPoint[0][1], 255, 255, 255, 255, true);
+    	    	    	    canvas.update();
+    	    	    	    blinkPoint = false;
+    	    	    }
+    	    	    else
+    	    	    {
+    	    	    	    canvas.setPixel32(localPoint[0][0], localPoint[0][1], 161, 253, 255, 255, true);
+    	    	    	    canvas.update();
+    	    	    	    blinkPoint = true;
+    	    	    }
+    	    }*/
+    	    /*
+    	    
+    	    if (contPathArray[path] > -1)
+    	    {
+    	    	    canvas.setPixel32(testPath[path][contPathArray[path]][0], testPath[path][contPathArray[path]][1], 0, 0, 0, 255, true);
+    	    	    canvas.update();
+    	    }
+    	    console.log('contPathArray[path]: ' + contPathArray[path]);
+    	    console.log('testPath[path].length: ' + testPath[path].length);
+    	    if (contPathArray[path] >= testPath[path].length - 1)
+    	    {
+    	    	    contPathArray[path] = -1;
+    	    }
+    	    //console.log('contPathArray[path]: ' + contPathArray[path]);
+    	    contPathArray[path] = contPathArray[path] + 1;
+    	    //console.log('testPath[path][contPathArray[path]][0]: ' + testPath[path][contPathArray[path]][0]);
+    	    //console.log('testPath[path][contPathArray[path]][1]: ' + testPath[path][contPathArray[path]][1]);
+    	    if (matXY[testPath[path][contPathArray[path]][0]][testPath[path][contPathArray[path]][1]] != 0)
+    	    {
+    	    	    if (testPath[path][contPathArray[path]][2] <= compTime)
+    	    	    {
+    	    	    	    canvas.setPixel32(testPath[path][contPathArray[path]][0], testPath[path][contPathArray[path]][1], 255, 127, 255, 255, true);
+    	    	    	    canvas.update();
+    	    	    }
+    	    }
+    	    else
+    	    {
+    	    	    if (testPath[path][contPathArray[path]][2] <= compTime)
+    	    	    {
+    	    	    	    canvas.setPixel32(testPath[path][contPathArray[path]][0], testPath[path][contPathArray[path]][1], 255, 255, 255, 255, true);
+    	    	    	    canvas.update();
+    	    	    	    matXY[testPath[path][contPathArray[path]][0]][testPath[path][contPathArray[path]][1]] = matXY[testPath[path][contPathArray[path]][0]][testPath[path][contPathArray[path]][1]] + 1;    
+    	    	    }
+    	    }  	 */  
+    }
+    
+    function getRed(index)
+    {
+    	    return (localClusterColor[index][0] * localClusterColor[index][3]);
+    }
+    
+    function getGreen(index)
+    {
+    	    return (localClusterColor[index][1] * localClusterColor[index][4]);
+    }
+    
+    function getBlue(index)
+    {
+    	    return (localClusterColor[index][2] * localClusterColor[index][5]);
+    }
+    
+    function blinkLocals()
+    { 
+    	    if (game.time.now > blinkTime)
+    	    {
+    	    	    //blinkTime = game.time.now + 500;
+    	    	    for (var i = 0; i < localPoint.length; i = i + 1)
+    	    	    {
+    	    	    	    if (localPoint[i][2] === 0)
+    	    	    	    {
+    	    	    	    	    //console.log('in first');
+    	    	    	    	    canvas.setPixel32(localPoint[i][0], localPoint[i][1], 255, 255, 255, 255, true);
+    	    	    	    	    //canvas.update();
+    	    	    	    	    localPoint[i][2] = 1;
+    	    	    	    }
+    	    	    	    else
+    	    	    	    {
+    	    	    	    	    //console.log('in second');
+    	    	    	    	    canvas.setPixel32(localPoint[i][0], localPoint[i][1], 100, 255, 255, 255, true);
+    	    	    	    	    //canvas.update();
+    	    	    	    	    localPoint[i][2] = 0;
+    	    	    	    }
+    	    	    }
+    	    }	     
+    }
+    
+    function clearMatrix()
+    {
+    	    for (var i = 0; i < 500; i = i + 1)
+    	    {
+    	    	    for (var k = 0; k < 500; k = k + 1)
+    	    	    {
+    	    	    	   matXY[i][k] = 0;
+    	    	    	   //console.log('XY value: ' + i + ' ' + k + ' = ' + matXY[i][k]);
+    	    	    }
+    	    }
+    }
+
+};
